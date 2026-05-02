@@ -21,7 +21,7 @@ documentation, testing, performance, security, architecture. Plus five
 anti-patterns and a Claude Code keyboard cheat sheet. Includes a French
 translation and a JSON build of the prompt set for snippet managers.
 
-Price: 9 EUR. Buy: realprompts.gumroad.com/l/claude-code-prompts
+Price: 9 EUR. Buy: realpromptsdev.gumroad.com/l/claude-code-prompts
 
 ## License
 

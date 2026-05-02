@@ -23,7 +23,7 @@ and seven cross-cutting files (testing patterns, security, performance,
 code review, observability, monorepo conventions, refactoring, AI-friendly
 comments). Each file is 50 to 150 lines of opinionated guidance.
 
-Price: 9 EUR. Buy: realprompts.gumroad.com/l/cursor-rules-senior-dev
+Price: 9 EUR. Buy: realpromptsdev.gumroad.com/l/cursor-rules-senior-dev
 
 ## License
 

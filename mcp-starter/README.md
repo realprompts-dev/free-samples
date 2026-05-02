@@ -26,7 +26,7 @@ Postgres, path-escape protection on the filesystem sandbox, secret
 masking on logs). All five share the same layout so once you ship one,
 the others read the same way.
 
-Price: 9 EUR. Buy: realprompts.gumroad.com/l/mcp-starter-pack
+Price: 9 EUR. Buy: realpromptsdev.gumroad.com/l/mcp-starter-pack
 
 ## License
 

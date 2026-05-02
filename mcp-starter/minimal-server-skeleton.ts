@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Free skeleton from realprompts.
 // The MCP Server Starter Pack ships 5 production-grade templates (Notion, Linear, Postgres, FS-sandbox, Slack) with tests, validation, and security baked in.
-// Buy the pack: realprompts.gumroad.com/l/mcp-starter-pack
+// Buy the pack: realpromptsdev.gumroad.com/l/mcp-starter-pack
 //
 // Minimal MCP server: stdio transport, one "ping" tool, JSON-Schema
 // input validation, env-based secret read, error returns over throws.

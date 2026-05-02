@@ -169,4 +169,4 @@ Output blocking findings first, then advisory, then "looks fine" notes.
 
 ---
 
-45 more prompts in the full pack: realprompts.gumroad.com/l/claude-code-prompts
+45 more prompts in the full pack: realpromptsdev.gumroad.com/l/claude-code-prompts

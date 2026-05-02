@@ -47,6 +47,6 @@ Human-readable summary: https://creativecommons.org/licenses/by-nc/4.0/
 ================================================================================
 
 For commercial use of these samples, or for the paid catalog under its own
-license terms, visit: https://realprompts.gumroad.com
+license terms, visit: https://realpromptsdev.gumroad.com
 
 Contact: realprompts.dev@gmail.com

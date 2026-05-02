@@ -19,10 +19,10 @@ product on Gumroad.
 
 | SKU | Price | Gumroad slug |
 |---|---|---|
-| Claude Code Prompt Pack | 9 EUR | realprompts.gumroad.com/l/claude-code-prompts |
-| Cursor Rules Pack: Senior Dev Edition | 9 EUR | realprompts.gumroad.com/l/cursor-rules-senior-dev |
-| Solo Dev Guide | 9 EUR | realprompts.gumroad.com/l/solo-dev-guide |
-| MCP Server Starter Pack | 9 EUR | realprompts.gumroad.com/l/mcp-starter-pack |
+| Claude Code Prompt Pack | 9 EUR | realpromptsdev.gumroad.com/l/claude-code-prompts |
+| Cursor Rules Pack: Senior Dev Edition | 9 EUR | realpromptsdev.gumroad.com/l/cursor-rules-senior-dev |
+| Solo Dev Guide | 9 EUR | realpromptsdev.gumroad.com/l/solo-dev-guide |
+| MCP Server Starter Pack | 9 EUR | realpromptsdev.gumroad.com/l/mcp-starter-pack |
 
 ## License
 
