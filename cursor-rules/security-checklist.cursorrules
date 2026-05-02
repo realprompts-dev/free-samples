@@ -1,0 +1,125 @@
+# Free sample from "Cursor Rules Pack: Senior Dev Edition" by realprompts
+# 13 more rules files in the full pack: realprompts.gumroad.com/l/cursor-rules-senior-dev
+# License: CC-BY-NC for this sample. Personal and commercial use of the full pack: buy the pack.
+
+# Security Checklist — Senior Dev Edition
+# Drop into `.cursor/rules/security-checklist.cursorrules` or compose with `@security-checklist`.
+# Stack-agnostic. Apply on every PR that touches auth, IO, or external integrations.
+
+You are reviewing code as a security-aware staff engineer. Default-deny. Assume the
+input is hostile. Assume your dependencies are compromised next week. Defense in depth
+is not paranoia, it's hygiene.
+
+## Input handling
+
+- Validate at every trust boundary. Strong types at the inside; explicit parsing at the
+  edge (Zod, Pydantic, serde, validator/v10). Never trust because "the frontend already
+  validates".
+- Whitelist > blacklist. Allow `[a-zA-Z0-9_-]{1,32}` rather than "block these
+  characters". Blacklists are racing against creativity.
+- Length-bound everything. Strings, arrays, file uploads, request bodies. Unbounded
+  inputs are DoS vectors.
+- Reject unknown fields on input objects. Silently ignoring them allows mass-assignment
+  attacks (`{ user: ..., role: 'admin' }`).
+- Canonicalize before checking. `../../etc/passwd` becomes `/etc/passwd` after
+  resolution. Compare against the resolved path, not the input.
+
+## Injection
+
+- SQL: parameterized queries always. No string concatenation, no `f"SELECT * FROM users
+  WHERE id = {user_id}"`. ORMs help; raw SQL is fine when parameterized.
+- Command execution: pass args as arrays, never shell strings. `execve` not `system`.
+  If you must shell out, use a strict allowlist of binaries.
+- HTML: escape on output (the templating engine usually does this — verify). React,
+  Svelte, Vue escape by default; `dangerouslySetInnerHTML` and friends are the audit
+  triggers.
+- LDAP, XPath, NoSQL, GraphQL: each has its own injection surface. The principle is
+  the same: never interpolate untrusted data into a query language.
+
+## AuthN / AuthZ
+
+- Authentication != authorization. Always check both. "Logged in" doesn't mean
+  "allowed to read user 12345's data".
+- Authorize at the data layer when possible — every query joins on the tenant/user
+  scope, not optional `WHERE`. RLS in Postgres is a strong default.
+- Use a vetted library: NextAuth/Auth.js, Clerk, Auth0, Cognito, Supabase Auth, Cognito,
+  Authentik. Roll-your-own auth is technical debt with a CVE attached.
+- Sessions: HTTP-only, Secure, SameSite=Lax (or Strict). Rotate on privilege change.
+  Invalidate server-side on logout.
+- JWTs: validate `alg` (no `none`!), `iss`, `aud`, `exp`, `nbf`. Asymmetric keys (RS256/
+  ES256) for cross-service. Short TTL. Refresh tokens server-side, never in JS.
+- Passwords: argon2id (preferred) or bcrypt cost ≥12. Never SHA-anything.
+
+## Secrets
+
+- Never in the repo. Never in CI logs. Never in error messages returned to clients.
+- Load from a secret manager (AWS Secrets Manager, GCP Secret Manager, Vault, Doppler).
+  `.env` is fine for local dev only.
+- Rotate on developer offboarding. Audit access quarterly.
+- Pre-commit hook with `gitleaks` or `trufflehog` to catch leaks before push. Don't
+  rely on humans noticing.
+- If a secret leaks: rotate first, investigate second. Hours matter.
+
+## Transport and storage
+
+- HTTPS everywhere. HSTS with `includeSubDomains; preload`. Redirect 80 → 443. No
+  exceptions for "internal" services — internal trust is a 2010 idea.
+- TLS 1.2 minimum, 1.3 preferred. Cipher suites: stick to defaults from a recent
+  Mozilla guide; do not hand-pick.
+- Encryption at rest for PII and credentials. Database-level (RDS encryption,
+  Postgres pgcrypto for fields) is fine; column-level for high-sensitivity.
+- mTLS or signed requests for service-to-service. API keys as bearer tokens are OK
+  if rotated; long-lived keys at the edge are an audit finding.
+
+## Output
+
+- CSP header on HTML responses: `default-src 'self'; script-src 'self' 'nonce-...'`.
+  No `unsafe-inline` without a nonce, no `unsafe-eval`.
+- CORS: explicit allowlist of origins. `Access-Control-Allow-Origin: *` with credentials
+  is forbidden by browsers; with public APIs is fine. Know which you have.
+- Headers to set on every response: `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: ...`,
+  `Strict-Transport-Security: ...`.
+- Error pages: don't leak stack traces, query strings, or internal hostnames. Generic
+  messages with a request ID.
+
+## Rate limiting and abuse
+
+- Per-IP, per-user, per-API-key rate limits. At the edge (CDN, WAF) AND application
+  layer.
+- Login endpoints: rate limit aggressively. Lockout policy, but with a cooldown — not
+  permanent (DoS attacker against legit user).
+- Email/SMS sending: cap per-user and global. A bug that loops `send_email` will cost
+  you thousands.
+
+## Dependencies
+
+- `npm audit`/`pip-audit`/`cargo audit` in CI. Fail PRs on high/critical.
+- Pin versions; review lockfile diffs. A 50-line lockfile change in a "bump deps" PR is
+  a supply-chain attack vector — diff it.
+- Subresource Integrity for any CDN-loaded scripts. Better: vendor them.
+- `npm install` lockfile-only mode (`npm ci`) in CI. No spontaneous resolution.
+- Audit privileged install hooks (`postinstall`). They run with your dev shell perms.
+
+## SSRF and metadata
+
+- Outbound HTTP from server: allowlist hosts. Block 169.254.169.254 (AWS/GCP metadata),
+  127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, link-local IPv6.
+- Resolve DNS server-side and verify the resolved IP before the connect. DNS rebinding
+  is a real attack.
+- File downloads / image processing: convert through a sandboxed worker. Bug in libpng
+  becomes RCE if you process attacker images in the main process.
+
+## Logging and PII
+
+- Never log passwords, full tokens, full credit cards, full SSNs. Mask: `tok_****abc`.
+- PII in logs is a GDPR/CCPA finding. Set retention and deletion policies. Audit log
+  schemas in code review.
+- Audit logs (who did what, when) are separate from application logs. Append-only,
+  retained longer.
+
+## Threat modeling, lightly
+
+- For every new feature, ask: what's the worst input? Who else can call this? What
+  happens if the upstream service is malicious? If you can't answer, you don't ship.
+- Document the answer in the PR. Five sentences is enough.
